@@ -8,12 +8,13 @@ coefficients
 
 P = Bt
 
-where
+where:
 A = ray origin (vec3)
 B = ray direction (vec3)
 r = radius (float)
 t = hit distance (float)
 P = point along ray (vec3)
+
 */
 
 
