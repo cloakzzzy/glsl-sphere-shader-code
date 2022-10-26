@@ -1,15 +1,20 @@
+/*
+coefficients
 
+       a                                b                                    c
+       ⬇                                ⬇                                    ⬇
 
-// (B.x^2 + B.y^2 + B.z^2)t^2 + (2(A.x B.x + A.y B.y + A.z + B.z))t + (A.x^2 + A.y^2 + A.z^2 - r^2) = 0
+(B.x^2 + B.y^2 + B.z^2)t^2 + (2(A.x B.x + A.y B.y + A.z + B.z))t + (A.x^2 + A.y^2 + A.z^2 - r^2) = 0
 
-// P = Bt
+P = Bt
 
-// where
-// A = ray origin (vec3)
-// B = ray direction (vec3)
-// r = radius (float)
-// t = hit distance (float)
-// P = point along ray (vec3)
+where
+A = ray origin (vec3)
+B = ray direction (vec3)
+r = radius (float)
+t = hit distance (float)
+P = point along ray (vec3)
+*/
 
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
