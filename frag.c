@@ -1,5 +1,4 @@
 /*
-coefficients
 
        a                                b                                    c
        ⬇                                ⬇                                    ⬇
