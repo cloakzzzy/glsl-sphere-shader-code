@@ -9,6 +9,7 @@ coefficients
 P = Bt
 
 where:
+
 A = ray origin (vec3)
 B = ray direction (vec3)
 r = radius (float)
