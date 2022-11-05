@@ -42,25 +42,23 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //float deg = iMouse.x / 5.0f;
     float deg = 0.0f;
     
-    vec3 rayOrigin = vec3(0.0f, 1.0f, -2.f);
+    vec3 rayOrigin = vec3(0.0f, 1.f, -2.f);
+   
     
     float radius [] = float[](
-    100.f,
+    1000000.f,//plane radius
     2.f,
     2.f
     );
-    //vec3 spherepos [] = vec3[](vec3(3.f,0.f,5.f), vec3(0.0f ,0.0f ,2.0f),vec3( 0.5,0.5,5.f));
-    //vec3 spherecol []= vec3[](vec3(0.0f,0.f,1.f), vec3(1.f,0.f,0.f), vec3(0.f,1.f,0.f));
-     //                           blue                   red                green
-     
+    
     vec3 spherepos [] = vec3[](
-    vec3(0.f,-100.f,-2.f),
+    vec3(0.f,-1000000.f,-2.f),//plane position
     vec3(0.f, 2.0f, 4.f),
     vec3(5.f, 2.0f, 4.f)
     );
     
     vec3 spherecol [] = vec3[](
-    vec3(1.f, 0.f, 0.f),
+    vec3(0.51,0.52,0.53), // plane colour
     vec3(0.f, 0.f,1.f),
     vec3(0.f, 1.f,0.f)
     );
@@ -91,7 +89,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         }
         else
         {
-            t[i] = 1000000000.0f;
+            t[i] = 10000000000000.0f;
         }
         
     }
@@ -110,13 +108,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //only one element 
     
     //intersection
-    if (t.length() == 1 && t[0] != 1000000000.0f )
+    if (t.length() == 1 && t[0] !=10000000000000.0f )
     {
         fragColor = vec4(spherecol[0], 1.f);
         return;
     }
     //no intersection
-    else if (t.length() == 1 && t[0] == 1000000000.0f)
+    else if (t.length() == 1 && t[0] == 10000000000000.0f)
     {
         fragColor = vec4(backcol, 1.f);
         return;
