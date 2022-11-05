@@ -83,7 +83,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
         if (discriminant >= 0.f)
         {
-            t[i] =(-b - sqrt(discriminant)) / (2.0f * a);
+            float t0 =(-b - sqrt(discriminant)) / (2.0f * a);
+            if (t0 > 0.f) {return;}//t[i] = t0;}
         }
         else
         {
@@ -143,11 +144,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     //setting the fragColor to that color
     
-    if (t[ind] > 0.0f)
-    {
-        fragColor = vec4(vec3(spherecol[ind]), 1.f);
-        return;
-    }
+    fragColor = vec4(vec3(spherecol[ind]), 1.f);
+    return;
+    
     
     //fragColor = vec4(backcol,1.f);
     //fragColor = vec4(vec3(rayOrigin * t[ind] - round(rayOrigin * t[ind])), 1.f);
