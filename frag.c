@@ -46,6 +46,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     float radius [] = float[](
     100.f,
+    2.f,
     2.f
     );
     //vec3 spherepos [] = vec3[](vec3(3.f,0.f,5.f), vec3(0.0f ,0.0f ,2.0f),vec3( 0.5,0.5,5.f));
@@ -54,12 +55,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
      
     vec3 spherepos [] = vec3[](
     vec3(0.f,-100.f,-2.f),
-    vec3(0.f, 2.0f, 4.f)
+    vec3(0.f, 2.0f, 4.f),
+    vec3(5.f, 2.0f, 4.f)
     );
     
     vec3 spherecol [] = vec3[](
     vec3(1.f, 0.f, 0.f),
-    vec3(0.f, 0.f,1.f)
+    vec3(0.f, 0.f,1.f),
+    vec3(0.f, 1.f,0.f)
     );
     
     
@@ -80,11 +83,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         float c = dot(rayOrigin - spherepos[i], rayOrigin - spherepos[i]) - radius[i] * radius[i];
         
         float discriminant = b * b - 4.0f * a * c;
+        float t0 =(-b - sqrt(discriminant)) / (2.0f * a);
         
-        if (discriminant >= 0.f)
-        {
-            float t0 =(-b - sqrt(discriminant)) / (2.0f * a);
-            if (t0 > 0.f) {return;}//t[i] = t0;}
+        if (discriminant >= 0.f && t0 >= 0.f )
+        { 
+            t[i] = t0;
         }
         else
         {
@@ -98,12 +101,21 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     bool eq = true;
     
+    if (t.length() == 0)
+    {
+        fragColor = vec4(backcol,1.f);
+        return;
+    }
+    
     //only one element 
-    if (t.length() == 1 && t[0] != 1000000000.0f && t[0] > 0.f && t[0] > 0.f)
+    
+    //intersection
+    if (t.length() == 1 && t[0] != 1000000000.0f )
     {
         fragColor = vec4(spherecol[0], 1.f);
         return;
     }
+    //no intersection
     else if (t.length() == 1 && t[0] == 1000000000.0f)
     {
         fragColor = vec4(backcol, 1.f);
@@ -113,6 +125,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     
     //if there are no intersections make it black ( if all values in t array are the same
+    
     for (int i = 0 ; i < t.length(); i++)
     {
          //if values are not the same 'eq' = false and break the loop
@@ -144,8 +157,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     //setting the fragColor to that color
     
-    fragColor = vec4(vec3(spherecol[ind]), 1.f);
-    return;
+    if (t[ind] > 0.f)
+    {
+        fragColor = vec4(vec3(spherecol[ind]), 1.f);
+    }
+   
     
     
     //fragColor = vec4(backcol,1.f);
