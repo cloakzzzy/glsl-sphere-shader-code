@@ -29,6 +29,8 @@ point.z = (px * sin(deg * RAD)) + (py * cos(deg * RAD)) + cy;
 
 */
 
+
+
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 pix = fragCoord/iResolution.xy * 2.0 - 1.0;
@@ -36,6 +38,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     pix.x *= aspectratio;
     
     const vec3 backcol = vec3(0.f,0.f,0.f);
+    
+    const float bignum = 10000000000000.0f;
     
     float RAD = 3.14159f/180.0f;
     
@@ -69,6 +73,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float a = dot(rayDir, rayDir); //constant
     
     float t [spherepos.length()];
+    bool intersection = false;
     
     for (int i = 0; i < spherepos.length(); i++)
     {
@@ -85,11 +90,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
         if (discriminant >= 0.f && t0 >= 0.f )
         { 
+            intersection = true;
             t[i] = t0;
         }
         else
         {
-            t[i] = 10000000000000.0f;
+            t[i] = bignum;
         }
         
     }
@@ -97,46 +103,23 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     int ind = 0;
     float minimum;
     
-    bool eq = true;
-    
-    if (t.length() == 0)
+    //no intersection
+    if (intersection == false)
     {
         fragColor = vec4(backcol,1.f);
         return;
     }
     
-    //only one element 
+    //only one element
     
     //intersection
-    if (t.length() == 1 && t[0] !=10000000000000.0f )
+    if (spherepos.length() == 1 && t[0] != bignum)
     {
         fragColor = vec4(spherecol[0], 1.f);
         return;
     }
-    //no intersection
-    else if (t.length() == 1 && t[0] == 10000000000000.0f)
-    {
-        fragColor = vec4(backcol, 1.f);
-        return;
-    }
     
     
-    
-    //if there are no intersections make it black ( if all values in t array are the same
-    
-    for (int i = 0 ; i < t.length(); i++)
-    {
-         //if values are not the same 'eq' = false and break the loop
-         if (t[i] != t[0]) {eq = false; break;}
-    }
-    
-    // if no intersections
-    if (eq == true)
-    {
-        //if no intersection then make the pixel equal to the backcolor
-        fragColor = vec4(backcol, 1.f);
-        return;
-    }
     
     //finding the smallest value in t array and storing that index in the 'ind' variable
     for (int i = 0; i < t.length(); i++)
@@ -153,6 +136,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         }
     }
     
+    if (t[ind] < 0.f) {return;}
     //setting the fragColor to that color
     
     if (t[ind] > 0.f)
