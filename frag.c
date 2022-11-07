@@ -8,7 +8,7 @@ b:
 c:
 (A.x^2 + A.y^2 + A.z^2 - r^2) = 0
 
-P = Bt (can figure out any point along a line)
+P = A + Bt (can figure out any point along a line)
 
 where:
 
@@ -68,7 +68,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     );
     
     
-    vec3 rayDir = vec3(pix.x, pix.y , 1.f);
+    vec3 rayDir = vec3(pix.x, pix.y ,1.f);
     
     float a = dot(rayDir, rayDir); //constant
     
@@ -136,16 +136,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         }
     }
     
-    if (t[ind] < 0.f) {return;}
     //setting the fragColor to that color
     
-    if (t[ind] > 0.f)
-    {
-        fragColor = vec4(vec3(spherecol[ind]), 1.f);
-    }
+    
+    
+    fragColor = vec4(vec3(spherecol[ind]), 1.f);
+    
    
     
     
-    //fragColor = vec4(backcol,1.f);
-    //fragColor = vec4(vec3(rayOrigin * t[ind] - round(rayOrigin * t[ind])), 1.f);
+    //fragColor = vec4(vec3(t[ind]- floor(t[ind])),1.f);
+    //fragColor = vec4(vec3(rayOrigin + rayDir * t[ind] - floor(rayOrigin + rayDir * t[ind])), 1.f);
 }
