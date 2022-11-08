@@ -21,7 +21,7 @@ P = point along ray (vec3)
 we need to solve for (t)
 
 Quadratic formula:
-(-b += sqrt(b^2 - 4*a*c)) / 2a
+(-b +- sqrt(b^2 - 4*a*c)) / 2a
 
 rotation:
 point.x = (px * cos(deg * RAD)) - (py * sin(deg * RAD)) + cx; 
