@@ -27,15 +27,34 @@ rotation:
 point.x = (px * cos(deg * RAD)) - (py * sin(deg * RAD)) + cx; 
 point.z = (px * sin(deg * RAD)) + (py * cos(deg * RAD)) + cy;
 
+rotation around the xz axis:
+spherepos[i].x = ((spherepos[i].x - rayOrigin.x) * cos(deg * RAD)) - ((spherepos[i].z - rayOrigin.z) * (sin(deg*RAD)) + rayOrigin.x);
+spherepos[i].z = ((spherepos[i].x - rayOrigin.x) * sin(deg * RAD)) + ((spherepos[i].z - rayOrigin.z) * (cos(deg*RAD)) + rayOrigin.x);
+    
+
 */
 
+
+struct Sphere
+{
+  float radius;
+  vec3 position;
+  vec3 colour;
+  
+};
 
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
+
+
     vec2 pix = fragCoord/iResolution.xy * 2.0 - 1.0;
     float aspectratio = iResolution.x / iResolution.y;
     pix.x *= aspectratio;
+    
+    Sphere spheres [] = Sphere[](
+        Sphere(2.f, vec3(0.f, 2.f, 4.f), vec3(0.f,0.f,1.f))
+    );
     
     const vec3 backcol = vec3(0.f,0.f,0.f);
     
@@ -72,15 +91,33 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     float a = dot(rayDir, rayDir); //constant
     
-    float t [spherepos.length()];
+    float t [spheres.length()];
     bool intersection = false;
     
+    for (int i = 0; i < spheres.length(); i++)
+    {
+        float b = 2.0f * dot(rayOrigin - spheres[i].position, rayDir);
+        float c = dot(rayOrigin - spheres[i].position, rayOrigin - spheres[i].position) - spheres[i].radius * spheres[i].radius;
+        
+        float discriminant = b * b - 4.0f * a * c;
+        float t0 =(-b - sqrt(discriminant)) / (2.0f * a);
+        
+        if (discriminant >= 0.f && t0 >= 0.f )
+        { 
+            intersection = true;
+            t[i] = t0;
+        }
+        else
+        {
+            t[i] = bignum;
+        }
+    
+    }
+    
+    /*
     for (int i = 0; i < spherepos.length(); i++)
     {
-        //rotation around the xz axis
-        //spherepos[i].x = ((spherepos[i].x - rayOrigin.x) * cos(deg * RAD)) - ((spherepos[i].z - rayOrigin.z) * (sin(deg*RAD)) + rayOrigin.x);
-        //spherepos[i].z = ((spherepos[i].x - rayOrigin.x) * sin(deg * RAD)) + ((spherepos[i].z - rayOrigin.z) * (cos(deg*RAD)) + rayOrigin.x);
-    
+        
   
         float b = 2.0f * dot(rayOrigin - spherepos[i], rayDir);
         float c = dot(rayOrigin - spherepos[i], rayOrigin - spherepos[i]) - radius[i] * radius[i];
@@ -99,6 +136,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         }
         
     }
+    */
     
     int ind = 0;
     float minimum;
@@ -110,10 +148,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         return;
     }
     
+    
     //only one element
     
     //intersection
-    if (spherepos.length() == 1 && t[0] != bignum)
+    if (spheres.length() == 1 && t[0] != bignum)
     {
         fragColor = vec4(spherecol[0], 1.f);
         return;
@@ -138,9 +177,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     //setting the fragColor to that color
     
-    
-    
-    fragColor = vec4(vec3(spherecol[ind]), 1.f);
+    fragColor = vec4(vec3(spheres[ind].colour), 1.f);
     
    
     
