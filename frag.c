@@ -53,7 +53,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     pix.x *= aspectratio;
     
     Sphere spheres [] = Sphere[](
-        Sphere(2.f, vec3(0.f, 2.f, 4.f), vec3(0.f,0.f,1.f))
+        Sphere(2.f, vec3(0.f, 2.f, 4.f), vec3(0.f,0.f,1.f)),
+        Sphere(2.f, vec3(5.f, 2.f, 4.f), vec3(0.f, 1.f, 0.f)),
+        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53))
     );
     
     const vec3 backcol = vec3(0.f,0.f,0.f);
@@ -66,26 +68,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float deg = 0.0f;
     
     vec3 rayOrigin = vec3(0.0f, 1.f, -2.f);
-   
-    
-    float radius [] = float[](
-    1000000.f,//plane radius
-    2.f,
-    2.f
-    );
-    
-    vec3 spherepos [] = vec3[](
-    vec3(0.f,-1000000.f,-2.f),//plane position
-    vec3(0.f, 2.0f, 4.f),
-    vec3(5.f, 2.0f, 4.f)
-    );
-    
-    vec3 spherecol [] = vec3[](
-    vec3(0.51,0.52,0.53), // plane colour
-    vec3(0.f, 0.f,1.f),
-    vec3(0.f, 1.f,0.f)
-    );
-    
     
     vec3 rayDir = vec3(pix.x, pix.y ,1.f);
     
@@ -114,30 +96,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     }
     
-    /*
-    for (int i = 0; i < spherepos.length(); i++)
-    {
-        
-  
-        float b = 2.0f * dot(rayOrigin - spherepos[i], rayDir);
-        float c = dot(rayOrigin - spherepos[i], rayOrigin - spherepos[i]) - radius[i] * radius[i];
-        
-        float discriminant = b * b - 4.0f * a * c;
-        float t0 =(-b - sqrt(discriminant)) / (2.0f * a);
-        
-        if (discriminant >= 0.f && t0 >= 0.f )
-        { 
-            intersection = true;
-            t[i] = t0;
-        }
-        else
-        {
-            t[i] = bignum;
-        }
-        
-    }
-    */
-    
     int ind = 0;
     float minimum;
     
@@ -154,11 +112,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //intersection
     if (spheres.length() == 1 && t[0] != bignum)
     {
-        fragColor = vec4(spherecol[0], 1.f);
+        fragColor = vec4(spheres[0].colour, 1.f);
         return;
     }
-    
-    
     
     //finding the smallest value in t array and storing that index in the 'ind' variable
     for (int i = 0; i < t.length(); i++)
