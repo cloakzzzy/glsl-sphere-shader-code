@@ -53,9 +53,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     pix.x *= aspectratio;
     
     Sphere spheres [] = Sphere[](
-        Sphere(2.f, vec3(0.f, 2.f, 4.f), vec3(0.f,0.f,1.f)),
-        Sphere(2.f, vec3(5.f, 2.f, 4.f), vec3(0.f, 1.f, 0.f)),
-        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53))
+        Sphere(2.f, vec3(3.f, 2.f, 7.f), vec3(0.f,0.f,1.f)),// blue
+        Sphere(2.f, vec3(5.f, 2.f, 4.f), vec3(0.f, 1.f, 0.f)),//green
+        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53)),//plane
+        Sphere(1.f, vec3(-15.f, 8.f, 10.f), vec3(0.85,0.65,0.13))//lightsource
+        
     );
     
     const vec3 backcol = vec3(0.f,0.f,0.f);
@@ -68,6 +70,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float deg = 0.0f;
     
     vec3 rayOrigin = vec3(0.0f, 1.f, -2.f);
+    
     
     vec3 rayDir = vec3(pix.x, pix.y ,1.f);
     
@@ -110,7 +113,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //only one element
     
     //intersection
-    if (spheres.length() == 1 && t[0] != bignum)
+    if (spheres.length() == 1)
     {
         fragColor = vec4(spheres[0].colour, 1.f);
         return;
