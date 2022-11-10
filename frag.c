@@ -56,19 +56,17 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float aspectratio = iResolution.x / iResolution.y;
     pix.x *= aspectratio;
     
-    vec3 lightpos = vec3(0.f, 8.f, 10.f);
+    
     
     Sphere spheres [] = Sphere[](
         Sphere(2.f, vec3(3.f, 2.f, 7.f), vec3(0.f,0.f,1.f)),// blue
         Sphere(1.f, vec3(-2.f, 1.f, 4.f), vec3(0.f, 1.f, 0.f)),//green
-        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53)),//plane
-        Sphere(1.f, lightpos, vec3(0.85,0.65,0.13))//lightsource
+        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53))//plane
+        //Sphere(1.f, lightpos, vec3(0.85,0.65,0.13))//lightsource
         
     );
     
-    lightSource light = lightSource(lightpos, vec3(0.85,0.65,0.13));
-    
-    const vec3 backcol = vec3(0.f,0.f,0.f);
+    const vec3 backcol = vec3(0.53,0.81,0.92);
     
     const float bignum = 10000000000000.0f;
     
@@ -85,7 +83,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float a = dot(rayDir, rayDir); //constant
     
     float t [spheres.length()];
-    float t1 [spheres.length()];
     
     bool intersection = false;
     
@@ -144,7 +141,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         }
     }
     
+    vec3 lightpos = vec3(0.f, 8.f, 10.f);
+    lightSource light = lightSource(lightpos, vec3(0.85,0.65,0.13));
+    
     //shadows
+    
     
     //calculate hitpoint
     vec3 hitpoint = rayOrigin + (rayDir * t[ind]);
@@ -155,22 +156,20 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     bool intersection1 = false;
     
     
-    a = dot(rd,rd);
+    float a1 = dot(rd,rd);
     
-    for (int i = 0; i < spheres.length()-1; i++)
+    for (int i = 0; i < spheres.length(); i++)
     {
         float b1 = 2.0f * dot(hitpoint - spheres[i].position, rd);
         float c1 = dot(hitpoint - spheres[i].position, hitpoint - spheres[i].position) - spheres[i].radius * spheres[i].radius;
         
-        float discriminant1 = b1 * b1 - 4.0f * a * c1;
-        float t1 =(-b1 - sqrt(discriminant1)) / (2.0f * a);
+        float discriminant1 = b1 * b1 - 4.0f * a1 * c1;
+        float t1 =(-b1 - sqrt(discriminant1)) / (2.0f * a1);
         
         //intersection 
         if (discriminant1 >= 0.f && t1 >= 0.f)
         { 
             intersection1 = true;
-            fragColor = vec4(vec3(0.25), 1.f);
-            //fragColor = vec4(spheres[ind].colour, 1.f);
             break;
            
         }
@@ -179,11 +178,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     }
    
    
-    if (intersection1 = true)
+    if (intersection1 == false)
     {
         //fragColor = vec4(vec3(0.25), 1.f);
+        fragColor = vec4(spheres[ind].colour, 1.f);
         
     }
+    else
+    {
+        //shadow colour
+        fragColor = vec4(vec3(0.2), 1.f);
+    }
+        
     
     
     
