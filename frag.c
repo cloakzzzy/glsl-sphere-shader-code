@@ -61,8 +61,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     Sphere spheres [] = Sphere[](
         Sphere(2.f, vec3(3.f, 2.f, 7.f), vec3(0.f,0.f,1.f)),// blue
         Sphere(1.f, vec3(-2.f, 1.f, 4.f), vec3(0.f, 1.f, 0.f)),//green
-        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53))//plane
-        //Sphere(1.f, lightpos, vec3(0.85,0.65,0.13))//lightsource
+        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53)),//plane
+        Sphere(0.5f, vec3(-3.f, 1.f, 0.f), vec3(1.0,0.5,0.0))//orange
         
     );
     
@@ -141,11 +141,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         }
     }
     
-    vec3 lightpos = vec3(0.f, 8.f, 10.f);
+    vec3 lightpos = vec3(-15.f, 10.f, 10.f);
     lightSource light = lightSource(lightpos, vec3(0.85,0.65,0.13));
     
-    //shadows
-    
+    //shadows 
     
     //calculate hitpoint
     vec3 hitpoint = rayOrigin + (rayDir * t[ind]);
@@ -166,17 +165,24 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         float discriminant1 = b1 * b1 - 4.0f * a1 * c1;
         float t1 =(-b1 - sqrt(discriminant1)) / (2.0f * a1);
         
+        //stopping 'shadow acne'
+        if ((t1 < 0.001f) && (t1 >= 0.f) && (discriminant1 >= 0.f))
+        {
+           intersection1 = false;
+           break;
+        }
+        
         //intersection 
-        if (discriminant1 >= 0.f && t1 >= 0.f)
+        if (discriminant1 >= 0.f && t1 > 0.f)
         { 
             intersection1 = true;
             break;
-           
         }
         
    
     }
    
+    //return;
    
     if (intersection1 == false)
     {
