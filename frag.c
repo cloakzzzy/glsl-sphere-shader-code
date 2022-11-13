@@ -28,9 +28,7 @@ point.x = (px * cos(deg * RAD)) - (py * sin(deg * RAD)) + cx;
 point.z = (px * sin(deg * RAD)) + (py * cos(deg * RAD)) + cy;
 
 rotation around the xz axis:
-spherepos[i].x = ((spherepos[i].x - rayOrigin.x) * cos(deg * RAD)) - ((spherepos[i].z - rayOrigin.z) * (sin(deg*RAD)) + rayOrigin.x);
-spherepos[i].z = ((spherepos[i].x - rayOrigin.x) * sin(deg * RAD)) + ((spherepos[i].z - rayOrigin.z) * (cos(deg*RAD)) + rayOrigin.x);
-    
+   
 
 */
 
@@ -43,27 +41,19 @@ struct Sphere
   
 };
 
-struct lightSource
-{
-    vec3 position;
-    vec3 colour;
-};
-
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
+
     vec2 pix = fragCoord/iResolution.xy * 2.0 - 1.0;
     float aspectratio = iResolution.x / iResolution.y;
     pix.x *= aspectratio;
     
-    
-    
     Sphere spheres [] = Sphere[](
-        Sphere(2.f, vec3(3.f, 2.f, 7.f), vec3(0.f,0.f,1.f)),// blue
-        Sphere(1.f, vec3(-2.f, 1.f, 4.f), vec3(0.f, 1.f, 0.f)),//green
-        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53)),//plane
-        Sphere(0.5f, vec3(-3.f, 1.f, 0.f), vec3(1.0,0.5,0.0))//orange
-        
+        Sphere(2.f, vec3(0.f, 2.f, 2.f), vec3(1.f,0.f,0.f)),
+        Sphere(2.f, vec3(5.f, 2.f, 4.f), vec3(1.f, 1.f, 0.f)),
+        Sphere(2.f, vec3(-5.f, 2.f, 4.f), vec3(1.f, 0.f, 1.f)),
+        Sphere(1000000.f, vec3(0.f, -1000000.f, -2.f), vec3(0.51, 0.52, 0.53))
     );
     
     const vec3 backcol = vec3(0.53,0.81,0.92);
@@ -72,27 +62,27 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     float RAD = 3.14159f/180.0f;
     
-    //float deg = iMouse.x / 5.0f;
-    float deg = 0.0f;
     
-    vec3 rayOrigin = vec3(0.0f, 1.f, -2.f);
-    
+    vec3 rayOrigin = vec3(5.0f, 1.f, -2.f);
     
     vec3 rayDir = vec3(pix.x, pix.y ,1.f);
     
     float a = dot(rayDir, rayDir); //constant
     
     float t [spheres.length()];
-    
     bool intersection = false;
     
     for (int i = 0; i < spheres.length(); i++)
     {
+        
+    
+ 
         float b = 2.0f * dot(rayOrigin - spheres[i].position, rayDir);
         float c = dot(rayOrigin - spheres[i].position, rayOrigin - spheres[i].position) - spheres[i].radius * spheres[i].radius;
         
         float discriminant = b * b - 4.0f * a * c;
         float t0 =(-b - sqrt(discriminant)) / (2.0f * a);
+        
         
         if (discriminant >= 0.f && t0 >= 0.f )
         { 
@@ -106,7 +96,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     }
     
-    int ind = 0;
+    int close = 0;
     float minimum;
     
     //no intersection
@@ -119,88 +109,40 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     //only one element
     
+    
     //intersection
-    if (spheres.length() == 1)
+    if (spheres.length() == 1 && t[0] != bignum)
     {
-        fragColor = vec4(spheres[0].colour, 1.f);
-        return;
+        close = 0;
     }
     
     //finding the smallest value in t array and storing that index in the 'ind' variable
-    for (int i = 0; i < t.length(); i++)
+    if (spheres.length() > 1)
     {
-    
-        if (i == 0)
+        for (int i = 0; i < t.length(); i++)
         {
-            minimum = t[i];
-        }
-        if (t[i] < minimum)
-        {
-            minimum = t[i];
-            ind = i;
+    
+            if (i == 0)
+            {
+                minimum = t[i];
+            }
+            if (t[i] < minimum)
+            {
+                minimum = t[i];
+                close = i;
+            }
         }
     }
-    
-    vec3 lightpos = vec3(-15.f, 10.f, 10.f);
-    lightSource light = lightSource(lightpos, vec3(0.85,0.65,0.13));
-    
-    //shadows 
-    
-    //calculate hitpoint
-    vec3 hitpoint = rayOrigin + (rayDir * t[ind]);
-    
-    //trace a ray from the intersection to the light source and see if it intesects anything
-    vec3 rd = light.position - hitpoint;
-    
-    bool intersection1 = false;
-    
-    
-    float a1 = dot(rd,rd);
-    
-    for (int i = 0; i < spheres.length(); i++)
-    {
-        float b1 = 2.0f * dot(hitpoint - spheres[i].position, rd);
-        float c1 = dot(hitpoint - spheres[i].position, hitpoint - spheres[i].position) - spheres[i].radius * spheres[i].radius;
-        
-        float discriminant1 = b1 * b1 - 4.0f * a1 * c1;
-        float t1 =(-b1 - sqrt(discriminant1)) / (2.0f * a1);
-        
-        //stopping 'shadow acne'
-        if ((t1 < 0.001f) && (t1 >= 0.f) && (discriminant1 >= 0.f))
-        {
-           intersection1 = false;
-           break;
-        }
-        
-        //intersection 
-        if (discriminant1 >= 0.f && t1 > 0.f)
-        { 
-            intersection1 = true;
-            break;
-        }
-        
-   
-    }
-   
-    //return;
-   
-    if (intersection1 == false)
-    {
-        //fragColor = vec4(vec3(0.25), 1.f);
-        fragColor = vec4(spheres[ind].colour, 1.f);
-        
-    }
-    else
-    {
-        //shadow colour
-        fragColor = vec4(vec3(0.2), 1.f);
-    }
-        
-    
-    
     
     //setting the fragColor to that color
-    //fragColor = vec4(vec3(spheres[ind].colour), 1.f);
+    
+    vec3 hitpoint = rayOrigin + rayDir * t[close];
+    vec3 normal = normalize(hitpoint - spheres[close].position);
+    vec3 lightDir = (vec3(1.f, -1.f, 1.f));
+    float brightness = max(dot(-lightDir, normal), 0.f);
+    
+    
+    fragColor = vec4(spheres[close].colour * brightness, 1.f);
     
    
     
