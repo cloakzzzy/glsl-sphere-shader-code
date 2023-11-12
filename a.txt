@@ -1,5 +1,5 @@
 @echo off
 :a
 Set /p comm=cmd~
-&comm%
+%comm%
 Goto a
