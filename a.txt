@@ -3,3 +3,6 @@
 Set /p comm=cmd~
 %comm%
 Goto a
+
+set __COMPAT_LAYER=RunAsInvoker
+start SteamSetup
